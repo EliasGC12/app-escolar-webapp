@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FacadeService } from 'src/app/services/facade.service';
 import { Location } from '@angular/common';
 import { MatRadioChange } from '@angular/material/radio';
+import { AdministradoresService } from 'src/app/services/administradores.service';
 
 @Component({
   selector: 'app-registro-usuarios-screen',
@@ -31,9 +32,54 @@ export class RegistroUsuariosScreenComponent implements OnInit {
     public activatedRoute: ActivatedRoute,
     private router: Router,
     public facadeService: FacadeService,
+    private administradoresService: AdministradoresService
   ) { }
 
   ngOnInit(): void {
+    //Revisar si se está editando o creando un usuario
+    if(this.activatedRoute.snapshot.params['rol'] != undefined){
+      this.rol = this.activatedRoute.snapshot.params['rol'];
+      console.log("Rol detectado: ", this.rol);
+    }
+
+    //El if valida si existe un parámetro en la URL
+    if(this.activatedRoute.snapshot.params['id'] != undefined){
+      this.editar = true;
+      //Asignamos a nuestra variable global el valor del ID que viene por la URL
+      this.idUser = this.activatedRoute.snapshot.params['id'];
+      console.log("ID User: ", this.idUser);
+      //Al iniciar la vista obtiene el usuario por su ID
+      this.obtenerUserByID();
+    }
+  }
+
+  //Función para obtener el usuario por su ID
+  public obtenerUserByID() {
+    //Lógica para obtener el usuario según su ID y rol
+    console.log("Obteniendo usuario de tipo: ", this.rol, " con ID: ", this.idUser);
+    //Aquí se haría la llamada al servicio correspondiente según el rol
+    if(this.rol === "administrador"){
+      this.administradoresService.obtenerAdminPorID(this.idUser).subscribe(
+        (response) => {
+          this.user = response;
+          console.log("Usuario original obtenido: ", this.user);
+          // Asignar datos, soportando respuesta plana o anidada
+          this.user.first_name = response.user?.first_name || response.first_name;
+          this.user.last_name = response.user?.last_name || response.last_name;
+          this.user.email = response.user?.email || response.email;
+          this.user.tipo_usuario = this.rol;
+          this.isAdmin = true;
+        }, (error) => {
+          console.log("Error: ", error);
+          alert("No se pudo obtener el administrador seleccionado");
+        }
+      );
+
+    }else if(this.rol === "maestro"){
+      // TODO: Implementar lógica para obtener maestro por ID
+    }else if(this.rol === "alumno"){
+      // TODO: Implementar lógica para obtener alumno por ID
+    }
   }
 
   // Función para conocer que usuario se ha elegido

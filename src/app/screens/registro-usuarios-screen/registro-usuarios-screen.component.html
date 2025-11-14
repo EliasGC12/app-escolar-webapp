@@ -4,10 +4,18 @@
     <mat-card class="role-card">
       <mat-card-header class="role-card-header">
         <div class="actions-header-colum">
-          <mat-card-title class="title-card">Registro de usuario</mat-card-title>
-          <mat-card-subtitle class="subtitle-card">
-            Selecciona el tipo para mostrar el formulario correspondiente
-          </mat-card-subtitle>
+          <ng-container *ngIf="!editar; else active">
+            <mat-card-title class="title-card">Registro de usuario</mat-card-title>
+            <mat-card-subtitle class="subtitle-card">
+              Selecciona el tipo para mostrar el formulario correspondiente
+            </mat-card-subtitle>
+          </ng-container>
+          <ng-template #active>
+            <mat-card-title class="title-card">Edición de usuario</mat-card-title>
+            <mat-card-subtitle class="subtitle-card">
+              Modifica los datos del usuario seleccionado
+            </mat-card-subtitle>
+          </ng-template>
         </div>
         <!-- Botón regresar compartido -->
         <div class="actions-row">
