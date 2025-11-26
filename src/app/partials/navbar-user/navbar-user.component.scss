@@ -173,24 +173,118 @@
   border-radius: 8px;
   margin-bottom: 0.3rem;
   transition: background 0.18s, color 0.18s;
+
+  &:not(.dropdown-item) {
+    &.active,
+    &:hover {
+      background: #30507a;
+      color: #fff;
+
+      .material-icons {
+        color: #fff;
+      }
+    }
+  }
+
+  .material-icons {
+    margin-right: 0.7rem;
+    font-size: 1.2em;
+    color: #b5c6e0;
+    transition: color 0.18s;
+  }
+
+  &.dropdown-item {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    cursor: default;
+    background: transparent;
+
+    &:hover {
+      background: transparent;
+    }
+  }
 }
 
-.scoop-navbar-item.active,
-.scoop-navbar-item:hover {
-  background: #30507a;
-  color: #fff;
+// Dropdown styles
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.18s;
+  border-radius: 8px;
+  width: 100%;
+  color: #e4ecfa;
+
+  &:hover {
+    background: #30507a;
+
+    .material-icons {
+      color: #fff;
+    }
+  }
+
+  .dropdown-arrow {
+    margin-left: auto;
+    margin-right: 0;
+    transition: transform 0.3s ease;
+
+    &.rotated {
+      transform: rotate(180deg);
+    }
+  }
 }
 
-.scoop-navbar-item .material-icons {
-  margin-right: 0.7rem;
-  font-size: 1.2em;
-  color: #b5c6e0;
-  transition: color 0.18s;
-}
+.dropdown-menu {
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0.3rem 0.5rem 0 0.5rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #1a2c48;
+  border-radius: 8px;
 
-.scoop-navbar-item.active .material-icons,
-.scoop-navbar-item:hover .material-icons {
-  color: #fff;
+  &.show {
+    max-height: 250px;
+  }
+
+  .dropdown-submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.2rem 0.8rem 2.5rem;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    font-size: 1rem;
+    color: #e4ecfa;
+    border-radius: 6px;
+    margin: 0.2rem 0.5rem;
+
+    .material-icons {
+      font-size: 1.1em;
+      margin-right: 0.7rem;
+      color: #b5c6e0;
+      transition: color 0.18s;
+    }
+
+    &:hover {
+      background: #30507a;
+
+      .material-icons {
+        color: #fff;
+      }
+    }
+
+    &.active {
+      background: #457ab9;
+      color: #fff;
+
+      .material-icons {
+        color: #fff;
+      }
+    }
+  }
 }
 
 .scoop-navbar-badge {

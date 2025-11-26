@@ -5,16 +5,16 @@ import { FacadeService } from 'src/app/services/facade.service';
 @Component({
   selector: 'app-navbar-user',
   templateUrl: './navbar-user.component.html',
-  styleUrls: ['./navbar-user.component.scss']
+  styleUrls: ['./navbar-user.component.scss'],
 })
 export class NavbarUserComponent implements OnInit {
-
   public expandedMenu: string | null = null;
   public userInitial: string = '';
   public isMobileView: boolean = window.innerWidth <= 992;
   public showUserMenu: boolean = false;
   public mobileOpen: boolean = false;
   public userRole: string = '';
+  public registroExpanded: boolean = false;
 
   // Estas variables se utilizarán por si se habilita el tema oscuro
   paletteMode: 'light' | 'dark' = 'light';
@@ -34,13 +34,13 @@ export class NavbarUserComponent implements OnInit {
       '--text-main': '#e4ecfa',
       '--table-bg': '#222',
       '--table-header-bg': '#30507a',
-    }
+    },
   };
 
   togglePalette() {
     this.paletteMode = this.paletteMode === 'light' ? 'dark' : 'light';
     const palette = this.colorPalettes[this.paletteMode];
-    Object.keys(palette).forEach(key => {
+    Object.keys(palette).forEach((key) => {
       document.documentElement.style.setProperty(key, palette[key]);
     });
   }
@@ -63,14 +63,12 @@ export class NavbarUserComponent implements OnInit {
     // Siempre inicia con la paleta blanca
     this.paletteMode = 'light';
     const palette = this.colorPalettes['light'];
-    Object.keys(palette).forEach(key => {
+    Object.keys(palette).forEach((key) => {
       document.documentElement.style.setProperty(key, palette[key]);
     });
   }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   @HostListener('window:resize')
   onResize() {
@@ -107,6 +105,10 @@ export class NavbarUserComponent implements OnInit {
     this.expandedMenu = null;
   }
 
+  toggleRegistro() {
+    this.registroExpanded = !this.registroExpanded;
+  }
+
   logout() {
     // TODO: Después modificar el servicio de logout para que limpie la sesión en el backend
     this.facadeService.logout().subscribe(
@@ -123,30 +125,29 @@ export class NavbarUserComponent implements OnInit {
     );
   }
 
-  // Role helpers
+  // Role helpers - delegados al FacadeService
   isAdmin(): boolean {
-    return this.userRole === 'administrador';
+    return this.facadeService.isAdmin();
   }
   isTeacher(): boolean {
-    return this.userRole === 'maestro';
+    return this.facadeService.isTeacher();
   }
   isStudent(): boolean {
-    return this.userRole === 'alumno';
+    return this.facadeService.isStudent();
   }
   canSeeAdminItems(): boolean {
-    return this.isAdmin();
+    return this.facadeService.canSeeAdminItems();
   }
   canSeeTeacherItems(): boolean {
-    return this.isAdmin() || this.isTeacher();
+    return this.facadeService.canSeeTeacherItems();
   }
   canSeeStudentItems(): boolean {
-    return this.isAdmin() || this.isTeacher() || this.isStudent();
+    return this.facadeService.canSeeStudentItems();
   }
   canSeeHomeItem(): boolean {
-    return this.isAdmin() || this.isTeacher();
+    return this.facadeService.canSeeHomeItem();
   }
   canSeeRegisterItem(): boolean {
-    return this.isAdmin() || this.isTeacher();
+    return this.facadeService.canSeeRegisterItem();
   }
-
 }
