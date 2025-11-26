@@ -1,6 +1,7 @@
-import { OnInit, Component, ViewChild } from '@angular/core';
+import { OnInit, Component, ViewChild, inject, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 import { FacadeService } from 'src/app/services/facade.service';
 import { Router } from '@angular/router';
 import { MaestrosService } from 'src/app/services/maestros.service';
@@ -23,7 +24,14 @@ export interface DatosMateria {
   templateUrl: './materias-screen.component.html',
   styleUrls: ['./materias-screen.component.scss'],
 })
-export class MateriasScreenComponent implements OnInit {
+export class MateriasScreenComponent implements OnInit, AfterViewInit {
+  // Inyección de dependencias usando inject()
+  private facadeService = inject(FacadeService);
+  private materiasService = inject(MateriasService);
+  private maestrosService = inject(MaestrosService);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+
   public lista_materias: any[] = [];
   public name_user: string = '';
   public rol: string = '';
@@ -48,19 +56,22 @@ export class MateriasScreenComponent implements OnInit {
     this.lista_materias as DatosMateria[]
   );
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    
+    // Configurar filtro personalizado para NRC y nombre
+    this.dataSource.filterPredicate = (data: DatosMateria, filter: string) => {
+      const searchStr = filter.toLowerCase();
+      return (
+        data.nrc.toLowerCase().includes(searchStr) ||
+        data.nombre.toLowerCase().includes(searchStr)
+      );
+    };
   }
-
-  constructor(
-    public facadeService: FacadeService,
-    public materiasService: MateriasService,
-    public maestrosService: MaestrosService,
-    private router: Router,
-    public dialog: MatDialog
-  ) {}
 
   ngOnInit(): void {
     this.name_user = this.facadeService.getUserCompleteName();
@@ -133,6 +144,16 @@ export class MateriasScreenComponent implements OnInit {
                 this.lista_materias as DatosMateria[]
               );
               this.dataSource.paginator = this.paginator;
+              this.dataSource.sort = this.sort;
+              
+              // Configurar filtro personalizado
+              this.dataSource.filterPredicate = (data: DatosMateria, filter: string) => {
+                const searchStr = filter.toLowerCase();
+                return (
+                  data.nrc.toLowerCase().includes(searchStr) ||
+                  data.nombre.toLowerCase().includes(searchStr)
+                );
+              };
             }
           },
           (error) => {
@@ -168,5 +189,15 @@ export class MateriasScreenComponent implements OnInit {
         console.log('No se eliminó la materia');
       }
     });
+  }
+
+  // Método para aplicar filtro
+  public applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 }

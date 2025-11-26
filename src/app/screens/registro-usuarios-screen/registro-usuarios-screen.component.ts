@@ -103,8 +103,23 @@ export class RegistroUsuariosScreenComponent implements OnInit {
         }
       );
     } else if (this.rol === 'alumnos') {
-      console.log('Alumno original obtenido: ', this.user);
-      // TODO: Implementar lógica para obtener alumno por ID
+      this.alumnosService.obtenerAlumnoPorID(this.idUser).subscribe(
+        (response) => {
+          this.user = response;
+          console.log('Usuario original obtenido: ', this.user);
+          // Asignar datos, soportando respuesta plana o anidada
+          this.user.first_name =
+            response.user?.first_name || response.first_name;
+          this.user.last_name = response.user?.last_name || response.last_name;
+          this.user.email = response.user?.email || response.email;
+          this.user.tipo_usuario = this.rol;
+          this.isAlumno = true;
+        },
+        (error) => {
+          console.log('Error: ', error);
+          alert('No se pudo obtener el alumno seleccionado');
+        }
+      );
     }
   }
 

@@ -28,6 +28,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSortModule } from '@angular/material/sort';
 
 // Paginación
 import {
@@ -100,6 +101,7 @@ import { RegistroMateriasComponent } from './partials/registro-materias/registro
     MatSidenavModule,
     MatTableModule,
     MatPaginatorModule,
+    MatSortModule,
     MatDialogModule,
     NgChartsModule,
     NgxMaterialTimepickerModule,

@@ -142,9 +142,9 @@ export class RegistroMaestrosComponent implements OnInit {
     this.maestrosService.actualizarMaestro(this.maestro).subscribe(
       (response) => {
         // Redirigir o mostrar mensaje de éxito
-        alert('Administrador actualizado exitosamente');
-        console.log('Administrador actualizado: ', response);
-        this.router.navigate(['administrador']);
+        alert('Maestro actualizado exitosamente');
+        console.log('Maestro actualizado: ', response);
+        this.router.navigate(['maestros']);
       },
       (error) => {
         // Manejar errores de la API
