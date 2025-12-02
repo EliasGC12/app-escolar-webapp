@@ -1,0 +1,26 @@
+<div class="wrapper">
+  <div class="reg-shell">
+    <!-- Selección de tipo de usuario -->
+    <mat-card class="role-card">
+      <mat-card-header class="role-card-header">
+        <div class="actions-header-colum">
+          <ng-container>
+            <mat-card-title class="title-card"
+              >Registro de materias</mat-card-title
+            >
+          </ng-container>
+        </div>
+        <!-- Botón regresar compartido -->
+        <div class="actions-row">
+          <button mat-icon-button class="back-btn" (click)="goBack()">
+            <mat-icon class="back-icon">arrow_back</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+    </mat-card>
+    <!-- Formularios de registro según el tipo seleccionado -->
+    <div class="forms-area">
+      <app-registro-materias></app-registro-materias>
+    </div>
+  </div>
+</div>

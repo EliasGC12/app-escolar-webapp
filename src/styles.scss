@@ -219,3 +219,6 @@ p, span, label, input, button {
     background: darken($color-primary, 10%);
   }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
