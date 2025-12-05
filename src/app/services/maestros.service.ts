@@ -67,10 +67,14 @@ export class MaestrosService {
     if (!editar) {
       if (!this.validatorService.required(data['password'])) {
         error['password'] = this.errorService.required;
+      } else if (!this.validatorService.min(data['password'], 8)) {
+        error['password'] = this.errorService.min(8);
       }
 
       if (!this.validatorService.required(data['confirmar_password'])) {
         error['confirmar_password'] = this.errorService.required;
+      } else if (!this.validatorService.min(data['confirmar_password'], 8)) {
+        error['confirmar_password'] = this.errorService.min(8);
       }
     }
 

@@ -1,27 +1,70 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  inject,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { EliminarUserModalComponent } from 'src/app/modals/eliminar-user-modal/eliminar-user-modal.component';
+import { EditarUserModalComponent } from 'src/app/modals/editar-user-modal/editar-user-modal.component';
 import { AdministradoresService } from 'src/app/services/administradores.service';
 import { FacadeService } from 'src/app/services/facade.service';
+
+export interface DatosAdmin {
+  id: number;
+  clave_admin: string;
+  nombre_completo: string;
+  user: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  };
+  rfc: string;
+  ocupacion: string;
+}
 
 @Component({
   selector: 'app-admin-screen',
   templateUrl: './admin-screen.component.html',
   styleUrls: ['./admin-screen.component.scss'],
 })
-export class AdminScreenComponent implements OnInit {
+export class AdminScreenComponent implements OnInit, AfterViewInit {
+  // Inyección de dependencias
+  private facadeService = inject(FacadeService);
+  private administradoresService = inject(AdministradoresService);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+
   // Variables y métodos del componente
   public name_user: string = '';
   public lista_admins: any[] = [];
   public rol: string = '';
 
-  constructor(
-    public facadeService: FacadeService,
-    private administradoresService: AdministradoresService,
-    private router: Router,
-    public dialog: MatDialog
-  ) {}
+  displayedColumns: string[] = [
+    'clave_admin',
+    'nombre_completo',
+    'email',
+    'rfc',
+    'ocupacion',
+    'editar',
+    'eliminar',
+  ];
+  dataSource = new MatTableDataSource<DatosAdmin>(
+    this.lista_admins as DatosAdmin[]
+  );
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
 
   ngOnInit(): void {
     // Lógica de inicialización aquí
@@ -37,6 +80,47 @@ export class AdminScreenComponent implements OnInit {
       (response) => {
         this.lista_admins = response;
         console.log('Lista users: ', this.lista_admins);
+
+        if (this.lista_admins.length > 0) {
+          // Agregar campo nombre_completo
+          this.lista_admins.forEach((admin) => {
+            admin.nombre_completo = `${admin.user.first_name} ${admin.user.last_name}`;
+          });
+
+          this.dataSource = new MatTableDataSource<DatosAdmin>(
+            this.lista_admins as DatosAdmin[]
+          );
+
+          // Configurar sortingDataAccessor para campos calculados
+          this.dataSource.sortingDataAccessor = (item, property) => {
+            switch (property) {
+              case 'clave_admin':
+                return item.clave_admin;
+              case 'nombre_completo':
+                return item.nombre_completo;
+              default:
+                return (item as any)[property];
+            }
+          };
+
+          // Usar setTimeout para asegurar que sort y paginator se conecten
+          setTimeout(() => {
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+          });
+
+          // Configurar filtro personalizado
+          this.dataSource.filterPredicate = (
+            data: DatosAdmin,
+            filter: string
+          ) => {
+            const searchStr = filter.toLowerCase();
+            return (
+              data.clave_admin.toLowerCase().includes(searchStr) ||
+              data.nombre_completo.toLowerCase().includes(searchStr)
+            );
+          };
+        }
       },
       (error) => {
         alert('No se pudo obtener la lista de administradores');
@@ -45,19 +129,11 @@ export class AdminScreenComponent implements OnInit {
   }
 
   public goEditar(idUser: number) {
-    this.router.navigate(['registro-usuarios/administrador/' + idUser]);
   }
 
   public delete(idUser: number) {
-    // Se obtiene el ID del usuario en sesión, es decir, quien intenta eliminar
-    const userIdSession = Number(this.facadeService.getUserId());
-    // --------- Pero el parametro idUser (el de la función) es el ID del maestro que se quiere eliminar ---------
-    // Administrador puede eliminar cualquier maestro
-    // Maestro solo puede eliminar su propio registro
-    if (
-      this.rol === 'administrador' ||
-      (this.rol === 'maestro' && userIdSession === idUser)
-    ) {
+    // Solo administradores pueden eliminar
+    if (this.rol === 'administrador') {
       //Si es administrador o es maestro, es decir, cumple la condición, se puede eliminar
       const dialogRef = this.dialog.open(EliminarUserModalComponent, {
         data: { id: idUser, rol: 'administrador' }, //Se pasan valores a través del componente
@@ -69,7 +145,6 @@ export class AdminScreenComponent implements OnInit {
         if (result.isDelete) {
           console.log('Administrador eliminado');
           alert('Administrador eliminado correctamente.');
-          //Recargar página
           window.location.reload();
         } else {
           alert('Administrador no se ha podido eliminar.');
@@ -77,7 +152,17 @@ export class AdminScreenComponent implements OnInit {
         }
       });
     } else {
-      alert('No tienes permisos para eliminar este administrador.');
+      alert('Solo los administradores pueden eliminar administradores.');
+    }
+  }
+
+  // Método para aplicar filtro
+  public applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
   }
 }

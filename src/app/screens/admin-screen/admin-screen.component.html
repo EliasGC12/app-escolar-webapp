@@ -1,6 +1,5 @@
 <div class="wrapper main-content-admin">
-  <div class="header-home-admin">
-  </div>
+  <div class="header-home-admin"></div>
   <div class="body-admin">
     <!-- Datos iniciales de la vista de administrador -->
     <div class="row mt-5 mb-5">
@@ -22,32 +21,99 @@
       </div>
       <!-- Tabla de administradores -->
       <ng-container *ngIf="lista_admins.length > 0; else noData">
-        <!-- Si la tabla contiene registros se muestran todos los datos -->
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th scope="col">Clave Admin</th>
-                <th scope="col">Nombre Completo</th>
-                <th scope="col">Email</th>
-                <th scope="col">RFC</th>
-                <th scope="col">Ocupación</th>
-                <th scope="col">Editar</th>
-                <th scope="col">Eliminar</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let admin of lista_admins; let i=index">
-                <td>{{admin.clave_admin}}</td>
-                <td>{{admin.user.first_name}} {{admin.user.last_name}}</td>
-                <td>{{admin.user.email}}</td>
-                <td>{{admin.rfc}}</td>
-                <td>{{admin.ocupacion}}</td>
-                <td class="td-editar"><i class="bi bi-pencil-square" (click)="goEditar(admin.id)"></i></td>
-                <td class="td-eliminar"><i class="bi bi-trash3-fill" (click)="delete(admin.id)"></i></td>
-              </tr>
-            </tbody>
-          </table>
+                <div class="table-scroll-wrapper">
+          <div class="mat-elevation-z8">
+            <!-- Campo de búsqueda -->
+            <mat-form-field style="width: 100%; padding: 20px">
+              <mat-label>Buscar por Clave Admin o Nombre</mat-label>
+              <input
+                matInput
+                (keyup)="applyFilter($event)"
+                placeholder="Ej. ADM001 o Juan Pérez"
+                #input
+              />
+            </mat-form-field>
+
+            <table
+              mat-table
+              [dataSource]="dataSource"
+              matSort
+              style="width: 100%"
+            >
+              <!-- Columna Clave Admin -->
+              <ng-container matColumnDef="clave_admin">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Clave Admin
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.clave_admin }}
+                </td>
+              </ng-container>
+
+              <!-- Columna Nombre -->
+              <ng-container matColumnDef="nombre_completo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Nombre Completo
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.nombre_completo }}
+                </td>
+              </ng-container>
+
+              <!-- Columna Email -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef>Email</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.user.email }}
+                </td>
+              </ng-container>
+
+              <!-- Columna RFC -->
+              <ng-container matColumnDef="rfc">
+                <th mat-header-cell *matHeaderCellDef>RFC</th>
+                <td mat-cell *matCellDef="let element">{{ element.rfc }}</td>
+              </ng-container>
+
+              <!-- Columna Ocupación -->
+              <ng-container matColumnDef="ocupacion">
+                <th mat-header-cell *matHeaderCellDef>Ocupación</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.ocupacion }}
+                </td>
+              </ng-container>
+
+              <!-- Columna Editar -->
+              <ng-container matColumnDef="editar">
+                <th mat-header-cell *matHeaderCellDef>Editar</th>
+                <td mat-cell *matCellDef="let element" class="td-editar">
+                  <i
+                    class="bi bi-pencil-square"
+                    (click)="goEditar(element.id)"
+                  ></i>
+                </td>
+              </ng-container>
+
+              <!-- Columna Eliminar -->
+              <ng-container matColumnDef="eliminar">
+                <th mat-header-cell *matHeaderCellDef>Eliminar</th>
+                <td mat-cell *matCellDef="let element" class="td-eliminar">
+                  <i class="bi bi-trash3-fill" (click)="delete(element.id)"></i>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+
+            <!-- Paginación -->
+            <mat-paginator
+              [pageSizeOptions]="[5, 10, 20]"
+              showFirstLastButtons
+              aria-label="Seleccionar página"
+              style="width: 100%"
+            >
+            </mat-paginator>
+          </div>
         </div>
       </ng-container>
       <!-- Esto se muestra cuando no hay datos -->
