@@ -58,13 +58,13 @@
 }
 
 .table-responsive {
-  width: 100%;
+ width: 100%;
   overflow-x: auto;
   min-height: 1px;
   margin: 0 auto;
-  background: #fff;
+  background: var(--table-bg, #fff);
   border-radius: 12px;
-  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.07);
 }
 
 .table {
@@ -96,13 +96,14 @@ table {
 }
 
 .mat-mdc-header-cell {
-  border-bottom-color: #231F20;
+  border-bottom-color: var(--table-header-border, #231F20);
   font-family: Nexa-Bold !important;
   font-size: 18px;
   text-align: left;
   letter-spacing: 0;
-  color: #231F20;
+  color: var(--text-main, #231F20);
   opacity: 1;
+  background: var(--table-header-bg, #cfe2ff) !important;
 }
 
 .mat-mdc-cell {
@@ -110,8 +111,8 @@ table {
   font-family: Nexa !important;
   font-size: 15px !important;
   letter-spacing: 0 !important;
-  color: #231F20 !important;
-  opacity: 1 !important;
+  color: var(--text-main, #231F20) !important;
+  opacity: 1 !important;
 }
 
 /* Acciones */
